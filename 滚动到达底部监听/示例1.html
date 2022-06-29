@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #wrap,
+        #loading {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrap"></div>
+    <div id="loading">加载中...</div>
+    <script src="./OnReachBottom.js"></script>
+    <script>
+        const wrap = document.getElementById('wrap')
+        const loading = document.getElementById('loading')
+        let isLoading = false
+        let id = 0
+        addPara(20)
+        setLoading()
+        onReachBottom(window, () => {
+            if (isLoading) {
+                return
+            }
+            isLoading = true
+            setLoading()
+            setTimeout(() => {
+                addPara(10)
+                isLoading = false
+                setLoading()
+            }, 1000);
+        })
+        function setLoading() {
+            loading.style.visibility = isLoading ? 'visible' : 'hidden'
+        }
+        function addPara(len) {
+            const fragment = document.createDocumentFragment()
+            for (let i = 0; i < len; i++) {
+                const para = document.createElement('p')
+                para.innerHTML = '第' + id++ + '项'
+                para.className = 'para'
+                fragment.appendChild(para)
+            }
+            wrap.appendChild(fragment)
+        }
+    </script>
+</body>
+
+</html>

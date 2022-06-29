@@ -1,0 +1,12 @@
+[
+  {
+    "name": "rose",
+    "age": 18,
+    "likes": "['banana', 'apple', 'peach']"
+  },
+  {
+    "name": "alice",
+    "age": 20,
+    "likes": "['peach', 'watermelon']"
+  }
+]

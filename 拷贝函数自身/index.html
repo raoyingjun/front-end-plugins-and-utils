@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <h2>控制台查看结果</h2>
+    <h4>注意，是拷贝函数自身！！！</h4>
+    <script src="./copyFunction.js"></script>
+    <script>
+        var newFoo
+
+        console.log('oldFoo:', oldFoo)
+
+        console.log('copying function...')
+        newFoo = copyFunction(oldFoo)
+
+        console.log('newFoo:', newFoo)
+
+        console.log('call oldFoo(\'oldFoo\')')
+        oldFoo('oldFoo')
+
+        console.log('call newFoo(\'newFoo\')')
+        newFoo('newFoo')
+
+        console.log('oldFoo === newFoo', oldFoo === newFoo)
+        
+        function oldFoo(msg) {
+            console.log(msg + ' called')
+        }
+    </script>
+</body>
+
+</html>

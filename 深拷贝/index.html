@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<script src="./deepCopy.js"></script>
+<script>
+    var oldObj = {a: null, b: undefined, c: NaN, d: 1, f: {}, j: []}
+    var oldArray = [null, undefined, NaN, 1, {}, []]
+    var newObj = deepCopy(oldObj)
+    var newArray = deepCopy(oldArray)
+    console.log('oldObj:', oldObj)
+    console.log('newObj:', newObj)
+    console.log('newObj === oldObj:', newObj === oldObj)
+    console.log('oldArray:', oldArray)
+    console.log('newArray:', newArray)
+    console.log('newArray === oldArray:', newArray === oldArray)
+</script>
+</body>
+</html>

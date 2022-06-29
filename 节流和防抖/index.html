@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p id="throttle-output">尝试反复 resize 窗口大小，测试使用回流调用 resize 的频率</p>
+    <hr>
+    <button id="btn">点我测试防抖</button>
+    <p id="debounce-output">尝试快速多次点击按钮，观察函数触发的时机</p>
+    <script>
+
+        /*
+         * throttle 节流
+         * 函数在指定的间隔内只能执行一次
+         * 可以用于高频触发的事件，比如 resize, mousemove, scroll 等等
+         */
+
+        function throttle (fn, interval) {
+            var timer = null;
+            return function () {
+                if (timer) return;
+                timer = setTimeout(() => {
+                    fn.apply(this, arguments);
+                    timer = null;
+                }, interval);
+            }
+            
+        }
+
+        /*
+         * debounce 防抖
+         * 函数在指定的延时后执行一次，如果还未执行又被调用，则重置执行的时间
+         * 可以用于在短时间内多次调用的事件，比如 click, input 等
+         */
+
+        function debounce (fn, delay) {
+            var timer = null;
+            return function () {
+                if (timer) {
+                    clearTimeout(timer);
+                    timer = null;
+                }
+                timer = setTimeout(() => {
+                    fn.apply(this, arguments);
+                    timer = null;
+                }, delay);
+            }
+        }
+
+        /*
+         * 测试节流的封装
+         */
+
+        function testThrottle () {
+            var count = 0;
+            window.onresize = throttle(function (e) {
+                document.getElementById('throttle-output').innerHTML = ++count;
+            }, 200);
+        }
+        
+
+        /*
+         * 测试防抖的封装
+         */
+        
+        function testDebounce () {
+            var count = 0;
+            document.getElementById('btn').onclick = debounce(function (e) {
+                document.getElementById('debounce-output').innerHTML = ++count;
+            }, 200)
+        }
+        
+        /*
+         * 调用测试函数
+         */
+
+        testThrottle();
+        testDebounce();
+    </script>
+</body>
+</html>

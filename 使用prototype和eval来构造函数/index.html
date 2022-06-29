@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="./easyFunction.js"></script>
+    <script>
+        const Person = easyFunction({
+            constructor: 'Person',
+            data: {
+                name: 'Hanson',
+                age: 18,
+                say: function () {
+                    console.log(this.name);
+                }
+            }
+        });
+        const p = new Person();
+        p.say();
+    </script>
+</body>
+</html>

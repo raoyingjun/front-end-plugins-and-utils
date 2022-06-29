@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        p {
+            margin: 200px 0;
+        }
+    </style>
+</head>
+<script src="./getScrollDirection.js"></script>
+<body>
+    <p>请在控制台查看效果</p>
+    <p>请在控制台查看效果</p>
+    <p>请在控制台查看效果</p>
+    <p>请在控制台查看效果</p>
+    <p>请在控制台查看效果</p>
+    <p>请在控制台查看效果</p>
+    <p>请在控制台查看效果</p>
+    <p>请在控制台查看效果</p>
+    <p>请在控制台查看效果</p>
+    <script>
+        window.onscroll = function () {;
+            if (getScrollDirection()) {
+                console.log('向上滚动');
+            } else {
+                console.log('向下滚动');
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="./pubSub.js"></script>
+    <script>
+        test();
+        
+        function fn1 () {
+            console.log('订阅的回调fn1触发了')
+        }
+        function fn2 () {
+            console.log('订阅的回调fn2触发了');
+        }
+
+        function test () {
+            pubSub.subscribe('book', fn1);
+            pubSub.subscribe('book', fn2);
+
+            console.log('发布订阅');
+            pubSub.publish('book');
+
+            pubSub.unsubscribe('book', fn1);
+            console.log('订阅的回调fn1被取消订阅');
+
+            console.log('再次发布');
+            pubSub.publish('book');
+
+        }
+    </script>
+</body>
+</html>

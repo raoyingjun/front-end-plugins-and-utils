@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .selector {
+            position: fixed;
+            z-index: 99;
+            width: 100%;
+            transition: bottom 400ms;
+            bottom: 0;
+            height: 336px;
+        }
+
+        .selector-header,
+        .selector-footer {
+            height: 48px;
+            line-height: 48px;
+            box-sizing: border-box;
+        }
+
+        .selector-main {
+            width: 100%;
+            height: 240px;
+            user-select: none;
+            overflow: hidden;
+            pointer-events: none;
+            position: relative;
+        }
+
+        .selector-main::after {
+            display: block;
+            width: 100%;
+            pointer-events: none;
+            height: 240px;
+            content: "";
+            position: relative;
+            background-image: linear-gradient(to bottom,
+                    rgba(255, 255, 255, .9) 0,
+                    rgba(255, 255, 255, .1) calc((240px / 5) * 2),
+                    transparent calc((240px / 5) * 2),
+                    transparent calc((240px / 5) * 3),
+                    rgba(255, 255, 255, .1) calc((240px / 5) * 3),
+                    rgba(255, 255, 255, .9) 100%)
+        }
+
+        .selector-main::after.selector-level-1 .selector-main-column {
+            width: 100%;
+        }
+
+        .selector.selector-level-2 .selector-main-column {
+            width: 50%;
+        }
+
+        .selector.selector-level-3 .selector-main-column {
+            width: calc(100% / 3)
+        }
+
+        .selector-main-column {
+            pointer-events: auto;
+            float: left;
+            padding: calc(240px / 5 * 2) 0;
+            text-align: center;
+            color: rgb(78, 78, 78);
+            line-height: calc(240px / 5);
+        }
+
+        .selector-main-column-item {
+            pointer-events: none;
+            height: calc(240px / 5);
+        }
+
+        .selector-main-selected {
+            position: absolute;
+            height: calc(240px / 5);
+            top: calc((240px / 5) * 2);
+            border: 1px solid rgb(163, 163, 163);
+            box-sizing: border-box;
+            border-left: none;
+            border-right: none;
+            pointer-events: none;
+            width: 100%
+        }
+
+        .selector-header {
+            text-align: center;
+            border: 1px solid rgb(209, 209, 209);
+            border-right: none;
+            border-left: none;
+            color: rgb(71, 71, 216)
+        }
+
+        .selector-footer-confirm,
+        .selector-footer-cancel {
+            float: left;
+            width: 50%;
+            text-align: center;
+        }
+
+        .selector-footer-confirm {
+            background-color: rgb(71, 71, 216);
+            color: white;
+        }
+
+        .selector-footer-cancel {
+            color: rgb(151, 151, 151);
+            border-top: 1px solid rgb(216, 216, 216);
+            box-sizing: border-box;
+            background-color: rgb(231, 231, 231);
+        }
+    </style>
+</head>
+
+<body>
+    <button onclick="show()">打开选择器</button>
+    <button onclick="hide()">收起选择器</button>
+    <p id="msg"></p>
+    <div class="selector" id="selector">
+        <!-- <div class="selector-header">联动选择器</div> -->
+        <!-- <div class="selector-main"></div> -->
+        <!-- <div class="selector-footer">
+            <div class="selector-footer-confirm">确认</div>
+            <div class="selector-footer-cancel">取消</div>
+        </div> -->
+    </div>
+    <script src="./data.js"></script>
+    <script>
+        (function (win, doc) {
+            function Selector(options) {
+                this.autoLink = options.autoLink
+                this.change = options.change
+                this.initElement(options.el)
+                this.initHeader(options.title)
+                this.initMain()
+                this.initParams()
+                this.initLevel(options.level)
+                this.initSelected()
+                this.initData(options.data)
+                this.initListener()
+                this.initFooter()
+            }
+            Selector.prototype.initHeader = function (title) {
+                var header = doc.createElement('div')
+                header.classList.add('selector-header')
+                header.innerHTML = title
+                this.el.appendChild(header)
+            }
+            Selector.prototype.initFooter = function () {
+                var that = this
+                var footer = doc.createElement('div')
+                var confirm = doc.createElement('div')
+                var cancel = doc.createElement('div')
+                footer.classList.add('selector-footer')
+                confirm.classList.add('selector-footer-confirm')
+                confirm.innerHTML = '确认'
+                cancel.classList.add('selector-footer-cancel')
+                cancel.innerHTML = '取消'
+                confirm.onclick = function () {
+                    that.value = that.getValue()
+                    that.change && that.change(that.value)
+                    that.hide()
+                }
+                cancel.onclick = function () {
+                    that.hide()
+                    that.rollbackData()
+                }
+                footer.appendChild(confirm)
+                footer.appendChild(cancel)
+                this.el.appendChild(footer)
+            }
+            Selector.prototype.show = function () {
+                this.el.style.bottom = 0
+            }
+            Selector.prototype.hide = function () {
+                this.el.style.bottom = -this.el.clientHeight + 'px'
+
+            }
+            Selector.prototype.autoLinkList = function () {
+                this.setData()
+            }
+            Selector.prototype.rollbackData = function () {
+                this.columns[0].translateY = (240 / 5) * this.value[0].index * -1
+                this.columns[0].style.transform = `translateY(${this.columns[0].translateY}px)`
+                for (var i = 1; i < this.level; i++) {
+                    this.columns[i].innerHTML = ''
+                    this.addSelectorItem(this.columns[i], this.value[i - 1].children)
+                    this.columns[i].translateY = (240 / 5) * this.value[i].index * -1
+                    this.columns[i].style.transform = `translateY(${this.columns[i].translateY}px)`
+                }
+            }
+            Selector.prototype.setData = function () {
+                switch (this.level) {
+                    case 2:
+                        // if (this.selected !== this.columns[0]) {
+                        //     return
+                        // }
+                        var value = this.getValue()
+                        this.columns[1].innerHTML = ''
+                        this.addSelectorItem(this.columns[1], value[0].children)
+                        this.columns[1].translateY = value[1].index * (240 / 5) * -1
+                        this.columns[1].style.transform = `translateY(${this.columns[1].translateY}px)`
+                        break
+                    case 3:
+                        // if (this.selected !== this.columns[0] && this.selected !== this.columns[1]) {
+                        //     return
+                        // }
+
+                        var value = this.getValue()
+                        this.columns[1].innerHTML = ''
+                        this.addSelectorItem(this.columns[1], value[0].children)
+                        this.columns[1].translateY = value[1].index * (240 / 5) * -1
+                        this.columns[1].style.transform = `translateY(${this.columns[1].translateY}px)`
+                        this.columns[2].innerHTML = ''
+                        this.addSelectorItem(this.columns[2], value[1].children)
+                        this.columns[2].translateY = value[2].index * (240 / 5) * -1
+                        this.columns[2].style.transform = `translateY(${this.columns[2].translateY}px)`
+                        break
+                }
+            }
+            Selector.prototype.initSelected = function () {
+                var selectorSelected = document.createElement('div')
+                selectorSelected.classList.add('selector-main-selected')
+                this.main.appendChild(selectorSelected)
+            }
+            Selector.prototype.initElement = function (el) {
+                if (typeof el === 'string') el = doc.querySelector(el)
+                this.el = el
+                this.el.ontouchmove = function (e) {
+                    e.preventDefault()
+                }
+            }
+            Selector.prototype.onStart = function (e) {
+                this.previousY = e.clientY || e.touches[0].clientY
+                this.currentY = e.clientY || e.touches[0].clientY
+                this.selected = e.target
+                this.selected.style.transition = 'none'
+            }
+            Selector.prototype.onMove = function (e) {
+                this.previousY = this.currentY
+                this.currentY = e.clientY || e.touches[0].clientY
+                var dist = this.currentY - this.previousY
+                this.selected.translateY += dist
+                this.selected.style.transform = `translateY(${this.selected.translateY}px)`
+            }
+            Selector.prototype.onEnd = function () {
+                this.fit()
+            }
+            Selector.prototype.initParams = function () {
+                this.previousY = 0
+                this.currentY = 0
+            }
+            Selector.prototype.initMain = function () {
+                var main = doc.createElement('div')
+                main.classList.add('selector-main')
+                this.main = main
+                this.el.appendChild(main)
+            }
+            Selector.prototype.getValue = function () {
+                var values = []
+                var data = this.data
+                switch (this.level) {
+                    case 2:
+                        var firstIndex = this.getColumnIndex(this.columns[0])
+                        var children = this.data[firstIndex]
+                        var value = children.value
+                        var text = children.text
+                        values.push({
+                            index: firstIndex,
+                            children: children.children,
+                            value,
+                            text
+                        })
+
+                        var prevLen = this.columns[1].children.length
+                        var curLen = children.children.length
+                        var secondIndex = this.getColumnIndex(this.columns[1])
+                        if (prevLen > curLen && secondIndex > curLen - 1) {
+                            secondIndex = curLen - 1
+                        }
+                        children = children.children[secondIndex]
+                        value = children.value
+                        text = children.text
+                        values.push({
+                            index: secondIndex,
+                            children: children.children,
+                            value,
+                            text
+                        })
+                        break
+                    case 3:
+                        var firstIndex = this.getColumnIndex(this.columns[0])
+                        console.log(firstIndex)
+                        var children = this.data[firstIndex]
+                        var value = children.value
+                        var text = children.text
+                        values.push({
+                            index: firstIndex,
+                            children: children.children,
+                            value,
+                            text
+                        })
+
+                        var prevLen = this.columns[1].children.length
+                        var curLen = children.children.length
+                        var secondIndex = this.getColumnIndex(this.columns[1])
+                        if (prevLen > curLen && secondIndex > curLen - 1) {
+                            secondIndex = curLen - 1
+                        }
+                        children = children.children[secondIndex]
+                        value = children.value
+                        text = children.text
+                        values.push({
+                            index: secondIndex,
+                            children: children.children,
+                            value,
+                            text
+                        })
+
+                        prevLen = this.columns[2].children.length
+                        curLen = children.children.length
+                        var thirdIndex = this.getColumnIndex(this.columns[2])
+                        if (prevLen > curLen && thirdIndex > curLen - 1) {
+                            thirdIndex = curLen - 1
+                        }
+                        children = children.children[thirdIndex]
+                        value = children.value
+                        text = children.text
+                        values.push({
+                            index: thirdIndex,
+                            children: children.children,
+                            value,
+                            text
+                        })
+                        break;
+                    default:
+                        break;
+                }
+                return values
+            }
+
+            Selector.prototype.getColumnIndex = function (column) {
+                return Math.abs(column.translateY / (240 / 5))
+            }
+            Selector.prototype.animateTranslateY = function (translateY) {
+                this.selected.translateY = translateY
+                this.selected.style.transition = 'transform 400ms'
+                this.selected.style.transform = `translateY(${translateY}px)`
+                this.selected.animating = true
+            }
+            Selector.prototype.fit = function () {
+                var distOfTop = (240 / 5) * 2
+                var height = (240 / 5)
+                if (this.selected.translateY > 0) {
+                    this.animateTranslateY(0)
+                } else if (Math.abs(this.selected.translateY) > this.selected.clientHeight - (distOfTop * 2 + height)) {
+                    this.animateTranslateY(-this.selected.clientHeight + distOfTop * 2 + height)
+                } else if (this.selected.translateY % height !== 0) {
+                    this.animateTranslateY(Math.round(Math.abs(this.selected.translateY / height)) * height * -1)
+                }
+            }
+            Selector.prototype.initListener = function () {
+                var that = this
+                function onMove(e) {
+                    that.onMove(e)
+                }
+                function onEnd(e) {
+                    that.onEnd(e)
+                    doc.onmousemove = null
+                    doc.onmouseup = null
+                    doc.ontouchmove = null
+                    doc.ontouchend = null
+                }
+                that.main.onmousedown = function (e) {
+                    that.onStart(e)
+                    doc.onmousemove = onMove
+                    doc.onmouseup = onEnd
+                }
+                that.main.ontouchstart = function (e) {
+                    that.onStart(e)
+                    doc.ontouchmove = onMove
+                    doc.ontouchend = onEnd
+                }
+            }
+            Selector.prototype.initLevel = function (level) {
+                var that = this
+                function transitionEnd() {
+                    this.style.transition = 'none'
+                    this.animating = false
+                    var animating = false
+                    for (var i = 0; i < that.level; i++) {
+                        if (that.columns[i].animating) {
+                            animating = true
+                            break
+                        }
+                    }
+                    if (!animating) {
+                        console.log('animated');
+                        that.autoLinkList()
+                    }
+                }
+                this.el.classList.add('selector-level-' + level)
+                var fragment = doc.createDocumentFragment()
+                this.level = level
+                this.columns = []
+                for (var i = 0; i < level; i++) {
+                    var selectorColumn = doc.createElement('div')
+                    selectorColumn.classList.add('selector-main-column')
+                    selectorColumn.translateY = 0
+                    selectorColumn.addEventListener('transitionend', transitionEnd)
+                    this.columns.push(selectorColumn)
+                    fragment.appendChild(selectorColumn)
+                }
+                this.main.appendChild(fragment)
+            }
+            Selector.prototype.addSelectorItem = function (selectorColumn, items) {
+                var fragment = doc.createDocumentFragment()
+                for (var i = 0; i < items.length; i++) {
+                    var item = doc.createElement('div')
+                    item.classList.add('selector-main-column-item')
+                    item.innerHTML = items[i].text
+                    fragment.appendChild(item)
+                }
+                selectorColumn.appendChild(fragment)
+
+            }
+            Selector.prototype.initData = function (data) {
+                this.data = data
+                this.value = [
+                    this.data[0],
+                    this.data[0].children,
+                    this.data[0].children[0].children
+                ]
+                switch (this.level) {
+                    case 1:
+                        this.addSelectorItem(this.columns[0], this.data)
+                        break
+                    case 2:
+                        this.addSelectorItem(this.columns[0], this.data)
+                        this.addSelectorItem(this.columns[1], this.data[0].children)
+                        break
+                    case 3:
+                        this.addSelectorItem(this.columns[0], this.data)
+                        this.addSelectorItem(this.columns[1], this.data[0].children)
+                        this.addSelectorItem(this.columns[2], this.data[0].children[0].children)
+                        break
+                }
+            }
+            win.Selector = Selector
+        })(window, document)
+        function show() {
+            selector.show()
+        }
+        function hide() {
+            selector.hide()
+        }
+        var msg = document.getElementById('msg')
+        var selector = new Selector({
+            el: '#selector',
+            title: '联动选择器',
+            level: 3,
+            data: getData(),
+            autoLink: true,
+            change: function (value) {
+                var text = ''
+                value.forEach(item => {
+                    text += item.value + ','
+                })
+                text = text.substring(0, text.length - 1)
+                msg.innerHTML = text
+            }
+        })
+    </script>
+</body>
+
+</html>

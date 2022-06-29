@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p>
+        输入你的名字
+        <br>
+        <input id="input">
+    </p>
+    <p>
+        输入你的简介
+        <br>
+        <textarea id="textarea" rows="10" cols="30"></textarea>
+    </p>
+    <hr>
+    <p>你的姓名如下：</p>
+    <div id="name"></div>
+    <p>你的简介如下：</p>
+    <div id="desc"></div>
+    <script src="./observer.js"></script>
+    <script>
+        function $ (id) {
+            return document.getElementById(id);
+        }
+        const observerData = observer({
+            props: [
+                {
+                    prop: 'desc', 
+                    value: '在这里输入你的简介吧',
+                    handler:function (oldValue, newValue) {
+                        $('desc').innerHTML = newValue;
+                    }
+                },
+                {
+                    prop: 'name',
+                    handler: function (oldValue, newValue) {
+                        $('name').innerHTML = this.newValue;
+                    }
+                },
+            ]
+        });
+        observerData.name = '在这里输入你的姓名吧';
+        $('textarea').oninput = function () {
+            observerData.desc = this.value;
+        }
+        $('input').oninput = function () {
+            observerData['name'] = this.value;
+            console.log(observerData);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .selector {
+            width: 100%;
+            height: 240px;
+            position: fixed;
+            z-index: 99;
+            bottom: 0;
+            border-top: 1px solid rgb(219, 219, 219);
+            user-select: none;
+            overflow: hidden;
+        }
+
+        .selector::after {
+            display: block;
+            width: 100%;
+            pointer-events: none;
+            height: 240px;
+            content: "";
+            position: relative;
+            background-image: linear-gradient(to bottom,
+                    white 0,
+                    rgba(255, 255, 255, .5) calc((240px / 5) * 2),
+                    transparent calc((240px / 5) * 2),
+                    transparent calc((240px / 5) * 3),
+                    rgba(255, 255, 255, .5) calc((240px / 5) * 3),
+                    white 100%)
+        }
+
+        .selector.selector-level-1 .selector-column {
+            width: 100%;
+        }
+
+        .selector.selector-level-2 .selector-column {
+            width: 50%;
+        }
+
+        .selector.selector-level-3 .selector-column {
+            width: calc(100% / 3)
+        }
+
+        .selector-column {
+            float: left;
+            line-height: calc(240px / 5);
+            padding: calc(240px / 5 * 2) 0;
+            text-align: center;
+            color: rgb(78, 78, 78)
+        }
+
+        .selector-column-item {
+            pointer-events: none;
+        }
+
+        .selector-selected {
+            position: absolute;
+            height: calc(240px / 5);
+            top: calc((240px / 5) * 2);
+            border: 1px solid rgb(163, 163, 163);
+            box-sizing: border-box;
+            border-left: none;
+            border-right: none;
+            pointer-events: none;
+            width: 100%
+        }
+    </style>
+</head>
+
+<body>
+    <div class="selector selector-level-3" id="selector">
+        <div class="selector-selected"></div>
+        <div class="selector-column">
+            <div class="selector-column-item">
+                level1-item1
+            </div>
+            <div class="selector-column-item">
+                level1-item2
+            </div>
+            <div class="selector-column-item">
+                level1-item3
+            </div>
+            <div class="selector-column-item">
+                level1-item4
+            </div>
+            <div class="selector-column-item">
+                level1-item5
+            </div>
+            <div class="selector-column-item">
+                level1-item6
+            </div>
+            <div class="selector-column-item">
+                level1-item8
+            </div>
+            <div class="selector-column-item">
+                level1-item9
+            </div>
+        </div>
+        <div class="selector-column">
+            <div class="selector-column-item">
+                level2-item1
+            </div>
+            <div class="selector-column-item">
+                level2-item2
+            </div>
+            <div class="selector-column-item">
+                level2-item3
+            </div>
+            <div class="selector-column-item">
+                level2-item4
+            </div>
+            <div class="selector-column-item">
+                level2-item5
+            </div>
+            <div class="selector-column-item">
+                level2-item6
+            </div>
+            <div class="selector-column-item">
+                level2-item8
+            </div>
+            <div class="selector-column-item">
+                level2-item9
+            </div>
+            <div class="selector-column-item">
+                level2-item10
+            </div>
+            <div class="selector-column-item">
+                level2-item11
+            </div>
+            <div class="selector-column-item">
+                level2-item12
+            </div>
+            <div class="selector-column-item">
+                level2-item13
+            </div>
+        </div>
+        <div class="selector-column">
+            <div class="selector-column-item">
+                level3-item1
+            </div>
+            <div class="selector-column-item">
+                level3-item2
+            </div>
+            <div class="selector-column-item">
+                level3-item3
+            </div>
+            <div class="selector-column-item">
+                level3-item4
+            </div>
+            <div class="selector-column-item">
+                level3-item5
+            </div>
+            <div class="selector-column-item">
+                level3-item6
+            </div>
+            <div class="selector-column-item">
+                level3-item8
+            </div>
+            <div class="selector-column-item">
+                level3-item9
+            </div>
+            <div class="selector-column-item">
+                level3-item10
+            </div>
+            <div class="selector-column-item">
+                level3-item11
+            </div>
+            <div class="selector-column-item">
+                level3-item12
+            </div>
+        </div>
+    </div>
+    <script src="./data.js"></script>
+    <script>
+        (function (win, doc) {
+            function Selector(options) {
+                if (typeof options.el === 'string') options.el = doc.querySelector(options.el)
+                this.el = options.el
+                // this.data = options.data
+                this.initParams()
+                this.initLinstener()
+            }
+            Selector.prototype.onStart = function (e) {
+                this.previousY = e.clientY
+                this.currentY = e.clientY
+                this.selected = e.target
+                if (!this.selected.translateY) this.selected.translateY = 0
+                transitionEnd.call(this.selected)
+            }
+            Selector.prototype.onMove = function (e) {
+                this.previousY = this.currentY
+                this.currentY = e.clientY
+                var dist = this.currentY - this.previousY
+                this.selected.translateY += dist
+                this.selected.style.transform = `translateY(${this.selected.translateY}px)`
+            }
+            Selector.prototype.onEnd = function () {
+                this.fit()
+            }
+            Selector.prototype.initParams = function () {
+                this.previousY = 0
+                this.currentY = 0
+            }
+            function transitionEnd() {
+                this.style.transition = 'none'
+                this.removeEventListener('transitionend', transitionEnd)
+            }
+            Selector.prototype.animateTranslateY = function (translateY) {
+                this.selected.translateY = translateY
+                this.selected.style.transition = 'transform .4s'
+                this.selected.addEventListener('transitionend', transitionEnd)
+                this.selected.style.transform = `translateY(${translateY}px)`
+            }
+            Selector.prototype.fit = function () {
+                var distOfTop = (this.el.clientHeight / 5) * 2
+                var height = (this.el.clientHeight / 5)
+                if (this.selected.translateY > 0) {
+                    this.animateTranslateY(0)
+                } else if (Math.abs(this.selected.translateY) > this.selected.clientHeight - (distOfTop * 2 + height)) {
+                    this.animateTranslateY(-this.selected.clientHeight + distOfTop * 2 + height)
+                } else if (this.selected.translateY % height !== 0) {
+                    this.animateTranslateY(Math.round(Math.abs(this.selected.translateY / height)) * height * -1)
+                }
+            }
+            Selector.prototype.initLinstener = function () {
+                var that = this
+                function onMove(e) {
+                    that.onMove(e)
+                }
+                function onEnd(e) {
+                    that.onEnd(e)
+                    doc.onmousemove = null
+                    doc.onmouseup = null
+                }
+                that.el.onmousedown = function (e) {
+                    that.onStart(e)
+                    doc.onmousemove = onMove
+                    doc.onmouseup = onEnd
+                }
+            }
+            Selector.prototype.setLevel = function (level) {
+                var fragment = doc.createDocumentFragment()
+                this.level = level
+                for (var i = 0; i < level; i++) {
+                    var selecorColumn = doc.createElement('div')
+                    selecorColumn.classList.add('selector-column')
+                    fragment.appendChild(selecorColumn)
+                }
+                this.el.appendChild(fragment)
+            }
+            win.Selector = Selector
+        })(window, document)
+        new Selector({
+            el: '#selector'
+        })
+    </script>
+</body>
+
+</html>

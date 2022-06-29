@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script src="./querystring.js"></script>
+    <script>
+        const url = 'https://www.baidu.com?num=10&name=%E4%B8%AD%E5%9B%BD&hobby=englight&hobby=%E4%B8%AD%E6%96%87'
+        const obj = {
+            name: '中国',
+            hobby: ['englight', '中文']
+        }
+        console.log(qs.toUrlParam(obj))
+        console.log(qs.parseUrl(url))
+
+    </script>
+</body>
+
+</html>

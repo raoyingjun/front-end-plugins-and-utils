@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<input type="text" id="url" placeholder="请求的url" value="./data.json"/>
+<button id="send">获取数据</button>
+<ul id="results"></ul>
+<pre id="response"></pre>
+<script src="./ajax.js"></script>
+<script>
+    var results = document.getElementById('results')
+    var url = document.getElementById('url')
+    var response = document.getElementById('response')
+    document.getElementById('send').onclick = function () {
+        clear()
+        res('')
+        log('正在发送请求...')
+        const request = ajax({
+            method: 'post',
+            url: url.value,
+            async: true,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            query: 'id=5&type=2',
+            data: 'name=rose&age=18',
+            beforeSend: function (xhr) {
+                log('在发送请求前做些什么')
+            },
+            success: function (xhr) {
+                log('请求成功')
+                res(xhr.responseText)
+            },
+            error: function (error, xhr) {
+                log('请求出错，请在控制台查看原因')
+            },
+            progress: function (progress, event) {
+                log('接受到了数据进度：' + progress + '%');
+            },
+            complete: function (xhr) {
+                log('请求已完成');
+            },
+            timeout: function (error) {
+                log('请求超时')
+            }
+        });
+    }
+    function res(res) {
+        response.innerHTML = res
+    }
+    function clear() {
+        results.innerHTML = ''
+    }
+    function log(message) {
+        var li = document.createElement('li')
+        li.innerHTML = message
+        results.appendChild(li)
+    }
+</script>
+</body>
+</html>

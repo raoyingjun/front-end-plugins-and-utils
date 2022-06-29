@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        div {
+            height: 300px;
+            margin: 200px 0;
+            background-color: red;
+            transition: all 1s;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="lazy-load">
+        Here is view.
+    </div>
+    <div class="lazy-load">
+        Here is view.
+    </div>
+    <div class="lazy-load">
+        Here is view.
+    </div>
+    <div class="lazy-load">
+        Here is view.
+    </div>
+    <div class="lazy-load">
+        Here is view.
+    </div>
+    <div class="lazy-load">
+        Here is view.-
+    </div>
+    <script src="./lazyload.js"></script>
+    <script>
+        lazyLoad({
+            lazyLoadClass: 'lazy-load',
+            onLoadCallback: function (ele) {
+                // ele === this -> true
+                ele.innerHTML = 'into view'
+                this.style.backgroundColor = 'green'
+            }
+        })
+    </script>
+</body>
+
+</html>

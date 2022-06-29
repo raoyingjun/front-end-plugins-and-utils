@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button id="btn">点我</button>
+    <button id="off">卸载 fn1</button>
+    <script src="./utils.js"></script>
+    <script>
+        function fn1(e) {
+            console.log('fn1');
+        }
+        function fn2(e) {
+            console.log('fn2');
+        }
+        function fn3(e) {
+            console.log('fn3');
+        }
+        function fn4(e) {
+            console.log('fn4');
+        }
+        utils.on('#btn', 'click', fn1);
+        utils.on('#btn', 'click', fn2);
+        utils.on('#btn', 'click', fn3);
+        utils.on('#btn', 'click', fn4);
+        utils.on('#off', 'click', function () {
+            utils.off('#btn', 'click', fn1);
+            console.log('fn1 removed');
+        });
+    </script>
+</body>
+</html>
