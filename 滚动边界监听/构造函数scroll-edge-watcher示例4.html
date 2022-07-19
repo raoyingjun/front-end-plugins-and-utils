@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+
+        #app {
+            overflow: auto;
+            width: 100%;
+            height: 500px;
+            border: 1px solid black;
+        }
+
+        p {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+<div id="app"></div>
+<br>
+<button onclick="watcher.isStopped ? watcher.start() : watcher.stop()">暂停/重启监听</button>
+<button onclick="watcher.destroy()">取消监听</button>
+<p>当前触达位置：<span id="position">-</span></p>
+<p>监听器滚动值：<span id="value">-</span></p>
+<p>监听器变动（倒序）：<ul id="mutation"></ul></p>
+<script src="./index.js"></script>
+<script>
+    const LogMap = {
+        position: 'position',
+        value: 'value',
+        mutation: 'mutation',
+    }
+    let id = 0
+    addPara(40)
+    const watcher = new ScrollEdgeWatcher('#app', {
+        onReachTop() {
+            log(LogMap.position, '到达顶端')
+        },
+        onReachRight() {
+            log(LogMap.position, '到达最右侧')
+        },
+        onReachBottom() {
+            log(LogMap.position, '到达底端')
+        },
+        onReachLeft() {
+            log(LogMap.position, '到达最左侧')
+        },
+        offset: 0,
+        offsetBottom: 200,
+        offsetTop: 50,
+        offsetRight: 100,
+        onBeforeWatch() {
+            log(LogMap.mutation, '监听器准备应用监听')
+        },
+        onScroll(el) {
+            // this === el -> true
+            log(LogMap.value, `(${this.scrollLeft}, ${el.scrollTop})`)
+        },
+        onWatched() {
+            log(LogMap.mutation, '监听器已应用监听')
+        },
+        onStop() {
+            log(LogMap.mutation, '已暂停监听')
+        },
+        onStart() {
+            log(LogMap.mutation, '已重启监听')
+        },
+        onBeforeDestroy() {
+            log(LogMap.mutation, '监听器即将不再进行监听')
+        },
+        onDestroyed() {
+            log(LogMap.mutation, '监听器已不再进行监听')
+        }
+    })
+    console.log(watcher)
+
+    function log(type, content) {
+        let output = document.getElementById(type)
+        if (type === LogMap.mutation) {
+            const item = document.createElement('li')
+            item.innerHTML = content
+            prepend(output, item)
+            return
+        }
+        output.innerHTML = content
+    }
+    function prepend(parentNode, newNode) {
+        parentNode.insertBefore(newNode, parentNode.firstChild)
+    }
+    function addPara(len) {
+        const fragment = document.createDocumentFragment()
+        for (let i = 0; i < len; i++) {
+            const para = document.createElement('p')
+            para.innerHTML = Array(20).fill('第' + id++ + '项')
+            fragment.appendChild(para)
+        }
+        app.appendChild(fragment)
+    }
+</script>
+</body>
+
+</html>

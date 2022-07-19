@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        #app {
+            overflow: auto;
+            height: 100%;
+        }
+        p {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+<div id="app"></div>
+<script src="./scroll-edge-watcher.js"></script>
+<script>
+    const app = document.getElementById('app');
+    let id = 0
+    addPara(40)
+    scrollEdgeWatcher(app, {
+        onReachTop() {
+            console.log('---------onReachTop---------')
+        },
+        onReachRight() {
+            console.log('---------onReachRight---------')
+        },
+        onReachBottom() {
+            console.log('---------onReachBottom---------')
+        },
+        onReachLeft() {
+            console.log('---------onReachLeft---------')
+        },
+        offset: 0,
+        offsetBottom: 200,
+        offsetLeft: 200,
+    })
+
+    function addPara(len) {
+        const fragment = document.createDocumentFragment()
+        for (let i = 0; i < len; i++) {
+            const para = document.createElement('p')
+            para.innerHTML = Array(20).fill('第' + id++ + '项')
+            fragment.appendChild(para)
+        }
+        app.appendChild(fragment)
+    }
+</script>
+</body>
+
+</html>
