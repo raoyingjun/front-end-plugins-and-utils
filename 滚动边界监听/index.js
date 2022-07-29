@@ -55,7 +55,6 @@
         opts.offsetRight = options.offsetRight ?? opts.offset;
         opts.offsetBottom = options.offsetBottom ?? opts.offset;
         opts.offsetLeft = options.offsetLeft ?? opts.offset;
-        // 监听器是否处于暂停态
         // 初始化触达相关事件
         opts.onReachTop = (options.onReachTop ?? noop).bind(this.el, this.el)
         opts.onReachRight = (options.onReachRight ?? noop).bind(this.el, this.el)
