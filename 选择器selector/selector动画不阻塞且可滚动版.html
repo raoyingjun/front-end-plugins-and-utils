@@ -171,6 +171,7 @@
                 }
                 cancel.onclick = function () {
                     that.hide()
+                    that.value = that.getValue()
                     that.rollbackData()
                 }
                 footer.appendChild(confirm)
@@ -298,7 +299,6 @@
                         break
                     case 3:
                         var firstIndex = this.getColumnIndex(this.columns[0])
-                        console.log(firstIndex)
                         var children = this.data[firstIndex]
                         var value = children.value
                         var text = children.text
@@ -403,7 +403,6 @@
                         }
                     }
                     if (!animating) {
-                        console.log('animated');
                         that.autoLinkList()
                     }
                 }
