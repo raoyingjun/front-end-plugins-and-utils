@@ -43,6 +43,7 @@
 
 
     /**
+     * @private
      * @description 初始化参数，将缺省配置项标准化
      * @param {Object} options 配置项
      * @return {Object} opts 标准化后的配置项
@@ -70,8 +71,10 @@
         opts.onDestroyed = (options.onDestroyed ?? noop).bind(this.el, this.el)
         return opts
     }
+
     /**
-     *  @description 滚动事件处理函数
+     * @private
+     * @description 滚动事件处理函数
      */
     function _handleScroll() {
         if (this.isStopped) return
@@ -87,7 +90,7 @@
             isReachRight,
             isReachBottom,
             isReachLeft,
-        } = this._getParams()
+        } = this._getEdgeMatchedDiff()
         isReachTop && onReachTop()
         isReachRight && onReachRight()
         isReachBottom && onReachBottom()
@@ -96,11 +99,12 @@
     }
 
     /**
-     * @description 计算并返回每个方向是否触达边界值
+     * @private
+     * @description 对比新旧两轮是否触达边界并返回各个方向对比后的是否触达边界的结果
      * @param {HTMLElement} el
      * @return {{isReachTop: boolean, isReachRight: boolean, isReachBottom: boolean, isReachLeft: boolean}}
      */
-    ScrollEdgeWatcher.prototype._getParams = function () {
+    ScrollEdgeWatcher.prototype._getEdgeMatchedDiff = function () {
         // 获取新一轮是否到达边界的值
         let newReachEdgeStatus = this._getReachEdgeStatus()
         const params = {
@@ -118,6 +122,7 @@
     }
 
     /**
+     * @private
      * @description 获取实际可用的偏移距离
      * @return {{top: number, left: number, bottom: number, right: number}}
      */
@@ -141,6 +146,7 @@
     }
 
     /**
+     * @private
      * @description 获取 scrollTop 和 scrollLeft。
      * 注意：在使用显示比例缩放的系统上，scrollTop、scrollLeft 可能会提供一个小数，故向上取整
      */
@@ -151,9 +157,9 @@
         }
     }
     /**
+     * @private
      * @description 计算并返回各个方向是否触达边界
      * @return {{isReachTop: boolean, isReachRight: boolean, isReachBottom: boolean, isReachLeft: boolean}}
-     * @private
      */
     ScrollEdgeWatcher.prototype._getReachEdgeStatus = function () {
         const {top, right, bottom, left} = this._getUsableOffset()
@@ -168,8 +174,6 @@
             // 判断是否到达最左侧
             isReachLeft: this._scroll.scrollLeft <= left
         }
-
-
     }
 
     ScrollEdgeWatcher.prototype.destroy = function () {
@@ -188,8 +192,10 @@
         this.isStopped = false
         onStart()
     }
+
     /**
-     * 空函数，什么都不左，在没有对应事件处理函数的时候调用空函数来代替
+     * @private
+     * @description 空函数，什么都不左，在没有对应事件处理函数的时候调用空函数来代替
      */
     function noop() {
     }
