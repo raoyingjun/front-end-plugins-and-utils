@@ -24,7 +24,7 @@
 <body>
 <div id="app"></div>
 <br>
-<button onclick="watcher.isStopped ? watcher.start() : watcher.stop()">暂停/重启监听</button>
+<button onclick="watcher.stopped ? watcher.start() : watcher.stop()">暂停/重启监听</button>
 <button onclick="watcher.destroy()">取消监听</button>
 <p>当前触达位置：<span id="position">-</span></p>
 <p>监听器滚动值：<span id="value">-</span></p>
