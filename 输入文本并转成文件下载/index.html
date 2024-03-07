@@ -1,0 +1,32 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="text" id="txt">
+    <button id="btn">下载</button>
+    <script>
+        function $(id) {
+            return document.getElementById(id)
+        }
+        const txt = $('txt')
+        const btn = $('btn')
+
+        btn.addEventListener('click', () => {
+            const blob = new Blob([txt.value])
+            const url = URL.createObjectURL(blob)
+
+            const a = document.createElement('a')
+            a.download = 'text.txt'
+            a.href = url
+
+            a.click()
+        })
+    </script>
+</body>
+
+</html>
